@@ -1,37 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Skin - Minecraft Skin Site</title>
-    <link rel="stylesheet" href="style.css">
+
+<title>Upload Skin</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-    <div class="container">
-        <h1>Upload Minecraft Skin</h1>
-        <nav>
-            <a href="index.html">Gallery</a>
-            <a href="upload.html" class="active">Upload Skin</a>
-        </nav>
-        
-        <div class="upload-form">
-            <form id="skinForm">
-                <div class="form-group">
-                    <label for="skinName">Skin Name:</label>
-                    <input type="text" id="skinName" name="skinName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="skinFile">Upload Skin File (.png):</label>
-                    <input type="file" id="skinFile" name="skinFile" accept=".png" required>
-                </div>
-                
-                <button type="submit" class="btn">Upload Skin</button>
-            </form>
-            <div id="uploadStatus"></div>
-        </div>
-    </div>
-    
-    <script src="script.js"></script>
+
+<div class="navbar">
+
+<h1>Upload Skin</h1>
+
+<a href="index.html">Home</a>
+
+</div>
+
+<div class="upload-box" id="dropArea">
+
+<p>Drag & Drop Skin</p>
+
+<input type="file" id="fileInput">
+
+<input type="text" id="name" placeholder="Skin Name">
+
+<textarea id="description" placeholder="Description"></textarea>
+
+<button onclick="uploadSkin()">Upload</button>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>

@@ -1,86 +1,82 @@
-// Load skins on page load
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('skins-gallery')) {
-        loadSkins();
-    }
-    
-    const skinForm = document.getElementById('skinForm');
-    if (skinForm) {
-        skinForm.addEventListener('submit', handleSkinUpload);
-    }
-});
+const toggle = document.getElementById("themeToggle");
 
-// Load and display skins from skins.json
-async function loadSkins() {
-    try {
-        const response = await fetch('/api/skins');
-        const skins = await response.json();
-        
-        const gallery = document.getElementById('skins-gallery');
-        gallery.innerHTML = '';
-        
-        if (skins.length === 0) {
-            gallery.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">No skins uploaded yet.</p>';
-            return;
-        }
-        
-        skins.forEach(skin => {
-            const skinCard = document.createElement('div');
-            skinCard.className = 'skin-card';
-            skinCard.innerHTML = `
-                <img src="/uploads/${skin.filename}" alt="${skin.name}">
-                <h3>${skin.name}</h3>
-                <p>Uploaded: ${new Date(skin.uploadedAt).toLocaleDateString()}</p>
-            `;
-            gallery.appendChild(skinCard);
-        });
-    } catch (error) {
-        console.error('Error loading skins:', error);
-    }
+if(toggle){
+
+toggle.onclick = () => {
+
+document.body.classList.toggle("dark");
+
+localStorage.theme =
+document.body.classList.contains("dark")
+? "dark"
+: "light";
+
+};
+
 }
 
-// Handle skin upload
-async function handleSkinUpload(e) {
-    e.preventDefault();
-    
-    const skinName = document.getElementById('skinName').value;
-    const skinFile = document.getElementById('skinFile').files[0];
-    const statusDiv = document.getElementById('uploadStatus');
-    
-    if (!skinName || !skinFile) {
-        statusDiv.textContent = 'Please fill in all fields.';
-        statusDiv.className = 'error';
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('name', skinName);
-    formData.append('file', skinFile);
-    
-    try {
-        statusDiv.textContent = 'Uploading...';
-        statusDiv.className = '';
-        
-        const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-            statusDiv.textContent = 'Skin uploaded successfully!';
-            statusDiv.className = 'success';
-            document.getElementById('skinForm').reset();
-            setTimeout(() => {
-                window.location.href = '/index.html';
-            }, 1500);
-        } else {
-            statusDiv.textContent = `Error: ${result.error}`;
-            statusDiv.className = 'error';
-        }
-    } catch (error) {
-        statusDiv.textContent = `Error uploading skin: ${error.message}`;
-        statusDiv.className = 'error';
-    }
+if(localStorage.theme === "dark"){
+document.body.classList.add("dark");
+}
+
+// load skins
+async function loadSkins(){
+
+const res = await fetch("/skins");
+
+const skins = await res.json();
+
+const gallery = document.getElementById("gallery");
+
+if(!gallery) return;
+
+gallery.innerHTML = "";
+
+skins.forEach(skin => {
+
+gallery.innerHTML += `
+
+<div class="card">
+
+<img src="/uploads/${skin.file}">
+
+<h3>${skin.name}</h3>
+
+</div>
+
+`;
+
+});
+
+}
+
+loadSkins();
+
+// upload
+async function uploadSkin(){
+
+const file =
+document.getElementById("fileInput").files[0];
+
+const name =
+document.getElementById("name").value;
+
+const description =
+document.getElementById("description").value;
+
+const formData = new FormData();
+
+formData.append("skin", file);
+formData.append("name", name);
+formData.append("description", description);
+
+await fetch("/upload", {
+
+method: "POST",
+body: formData
+
+});
+
+alert("Uploaded!");
+
 }
