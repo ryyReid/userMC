@@ -1,65 +1,187 @@
-body {
-
-font-family: Arial;
-margin: 0;
-
-background: var(--bg);
-color: var(--text);
-
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 :root {
 
---bg: white;
---text: black;
---card: #eee;
+--bg: #f4f6f8;
+--card: #ffffff;
+--text: #111;
+--muted: #6b7280;
+--accent: #2563eb;
+--border: #e5e7eb;
 
 }
 
 .dark {
 
---bg: #121212;
---text: white;
---card: #1e1e1e;
+--bg: #0f1115;
+--card: #1a1d24;
+--text: #f9fafb;
+--muted: #9ca3af;
+--accent: #3b82f6;
+--border: #2a2f3a;
 
 }
+
+body {
+
+margin: 0;
+font-family: Inter, sans-serif;
+background: var(--bg);
+color: var(--text);
+
+}
+
+/* NAVBAR */
 
 .navbar {
 
 display: flex;
+align-items: center;
 justify-content: space-between;
-padding: 10px;
+
+padding: 14px 24px;
+
 background: var(--card);
+border-bottom: 1px solid var(--border);
+
+position: sticky;
+top: 0;
 
 }
+
+.navbar h1 {
+
+font-size: 20px;
+margin: 0;
+font-weight: 700;
+
+}
+
+.navbar a {
+
+text-decoration: none;
+color: var(--text);
+font-weight: 600;
+margin-left: 20px;
+
+}
+
+#themeToggle {
+
+background: none;
+border: none;
+font-size: 20px;
+cursor: pointer;
+
+}
+
+/* GALLERY */
 
 #gallery {
 
 display: grid;
-grid-template-columns: repeat(auto-fill, 200px);
+grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+
 gap: 20px;
-padding: 20px;
+
+padding: 25px;
+max-width: 1200px;
+margin: auto;
 
 }
+
+/* CARD */
 
 .card {
 
 background: var(--card);
-padding: 10px;
-border-radius: 10px;
+
+border-radius: 12px;
+
+overflow: hidden;
+
+border: 1px solid var(--border);
+
+transition: 0.2s;
+
+cursor: pointer;
+
+}
+
+.card:hover {
+
+transform: translateY(-5px);
+box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 
 }
 
 .card img {
 
 width: 100%;
+image-rendering: pixelated;
+background: #222;
 
 }
 
+.card h3 {
+
+margin: 10px;
+font-size: 16px;
+
+}
+
+/* UPLOAD */
+
 .upload-box {
 
-border: 2px dashed gray;
-padding: 30px;
-margin: 30px;
+max-width: 500px;
+margin: 40px auto;
+
+background: var(--card);
+padding: 20px;
+
+border-radius: 12px;
+
+border: 1px solid var(--border);
+
+}
+
+.upload-box input,
+.upload-box textarea {
+
+width: 100%;
+padding: 10px;
+margin-top: 10px;
+
+background: var(--bg);
+border: 1px solid var(--border);
+border-radius: 8px;
+
+color: var(--text);
+
+}
+
+.upload-box button {
+
+margin-top: 15px;
+width: 100%;
+padding: 12px;
+
+background: var(--accent);
+border: none;
+
+color: white;
+
+border-radius: 8px;
+
+font-weight: 600;
+
+cursor: pointer;
+
+}
+
+.upload-box button:hover {
+
+opacity: 0.9;
 
 }

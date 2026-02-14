@@ -1,27 +1,493 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkinVault • Minecraft Skins</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+        /* --- RESET & VARS --- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            /* Clean Theme Colors */
+            --bg-body: #0b0b0b;
+            --bg-nav: #161616;
+            --bg-card: #1d1d1d;
+            --border: #303030;
+            --text-main: #f2f2f2;
+            --text-muted: #9e9e9e;
+            --accent: #007bff; /* Blue */
+            --accent-hover: #0056b3;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg-body); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            overflow-x: hidden;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        a { text-decoration: none; color: inherit; }
 
-<title>Minecraft Skin Gallery</title>
+        /* --- NAVBAR --- */
+        nav { 
+            position: sticky; 
+            top: 0; 
+            z-index: 50; 
+            border-bottom: 1px solid var(--border); 
+            background: rgba(22, 22, 22, 0.95); 
+            backdrop-filter: blur(10px); 
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-inner { 
+            width: 100%;
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 1.5rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 1.5rem; 
+            height: 100%;
+        }
 
-<link rel="stylesheet" href="style.css">
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .logo-box { 
+            width: 28px; 
+            height: 28px; 
+            background: var(--text-main); 
+            color: var(--bg-body); 
+            border-radius: 4px; /* Rounded instead of polygon */
+            display: grid; 
+            place-items: center; 
+            font-weight: 800;
+            font-size: 14px; 
+        }
+        
+        .logo-text { 
+            font-family: 'Inter', sans-serif; 
+            letter-spacing: -0.5px;
+            color: var(--text-main); 
+        }
 
+        /* --- SEARCH --- */
+        .search-wrap { 
+            flex: 1; 
+            max-width: 500px; 
+            position: relative; 
+        }
+        
+        .search-wrap input { 
+            width: 100%; 
+            background: #000; 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            padding: 8px 12px 8px 36px; /* Space for icon */
+            font-family: inherit; 
+            font-size: 0.9rem; 
+            outline: none; 
+            border-radius: 4px;
+        }
+        .search-wrap input:focus { border-color: var(--accent); }
+
+        /* --- BUTTONS --- */
+        .btn-primary { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+            background: var(--accent); 
+            color: #fff; 
+            font-family: inherit; 
+            font-size: 0.85rem; 
+            font-weight: 500;
+            padding: 8px 16px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+        .btn-primary:hover { background: var(--accent-hover); }
+
+        .btn-outline { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: transparent; 
+            color: var(--text-muted); 
+            border: 1px solid var(--border); 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            padding: 8px 16px; 
+            border-radius: 4px;
+            cursor: pointer; 
+            transition: 0.2s;
+        }
+        .btn-outline.danger:hover { color: #f87171; border-color: #f87171; }
+
+        /* --- MAIN GRID --- */
+        .main { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+        
+        .skins-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 1rem; 
+        }
+        
+        .skin-card { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border); 
+            border-radius: 6px; 
+            overflow: hidden; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+        
+        .skin-card:hover { 
+            border-color: #555; 
+            transform: translateY(-3px); 
+        }
+        
+        .card-img { 
+            background: #121212; 
+            aspect-ratio: 1/1.2; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .card-img img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            image-rendering: pixelated; 
+        }
+        
+        .card-info { 
+            padding: 12px; 
+            text-align: center; 
+        }
+        .card-info div:first-child { color: var(--accent); font-weight: 600; margin-bottom: 2px; }
+
+        /* --- MODALS --- */
+        .modal-backdrop { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.85); 
+            z-index: 100; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+        }
+        .modal-backdrop.open { display: flex; }
+        
+        .modal { 
+            background: var(--bg-nav); 
+            border: 1px solid var(--border); 
+            width: 100%; 
+            max-width: 950px; 
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        #view-modal .modal { display: flex; flex-direction: column; }
+        
+        /* Viewer Layout */
+        .view-layout { display: flex; flex-direction: column; height: 600px; }
+        @media (min-width: 850px) { .view-layout { flex-direction: row; } }
+
+        #viewer-container { 
+            flex: 1.5; 
+            background: radial-gradient(circle, #222 0%, #000 100%); 
+            position: relative; 
+            border-right: 1px solid var(--border); 
+        }
+        
+        #skin-canvas { display: block; }
+        
+        .viewer-controls { 
+            position: absolute; 
+            bottom: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            display: flex; 
+            gap: 10px; 
+            z-index: 10; 
+        }
+        
+        .vbtn { 
+            background: rgba(0,0,0,0.6); 
+            border: 1px solid var(--border); 
+            color: #fff; 
+            font-size: 11px; 
+            padding: 6px 12px; 
+            border-radius: 4px;
+            cursor: pointer; 
+            font-family: inherit; 
+            font-weight: 600;
+        }
+        .vbtn.active { background: var(--accent); border-color: var(--accent); }
+
+        .view-details { 
+            flex: 1; 
+            padding: 2.5rem; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+        }
+        
+        #v-name { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff; }
+        #v-date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        #v-desc { color: #ccc; line-height: 1.6; font-size: 0.95rem; }
+
+        /* Upload Fields */
+        .drop-zone { 
+            border: 2px dashed var(--border); 
+            border-radius: 8px;
+            padding: 3rem; 
+            text-align: center; 
+            cursor: pointer; 
+            background: #0e0e0e;
+            transition: 0.2s;
+        }
+        .drop-zone:hover { border-color: var(--accent); background: #121212; }
+        
+        .field-input { 
+            width: 100%; 
+            background: #000; 
+            border: 1px solid var(--border); 
+            color: #fff; 
+            padding: 10px; 
+            border-radius: 4px;
+            margin-bottom: 1rem; 
+            outline: none; 
+            font-family: inherit; 
+        }
+        .field-input:focus { border-color: var(--accent); }
+    </style>
 </head>
 <body>
 
-<div class="navbar">
+<nav>
+    <div class="nav-inner">
+        <a class="logo" href="#">
+            <div class="logo-box">V</div>
+            <span class="logo-text">SKIN<em>VAULT</em></span>
+        </a>
+        <div class="search-wrap">
+            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); color:var(--muted)"></i>
+            <input id="search-input" type="text" placeholder="Search your vault...">
+        </div>
+        <button class="btn-primary" id="open-upload-btn"><i class="fa-solid fa-plus"></i> UPLOAD</button>
+    </div>
+</nav>
 
-<h1>Skin Gallery</h1>
-
-<button id="themeToggle">🌙</button>
-
-<a href="upload.html">Upload</a>
-
+<div class="main">
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="font-family:'Press Start 2P'; font-size: 14px;">COLLECTION</h2>
+        <div id="stats" style="font-size: 0.8rem; color: var(--muted); font-weight: 600;">0 Skins</div>
+    </div>
+    <div class="skins-grid" id="skins-grid"></div>
 </div>
 
-<div id="gallery"></div>
+<div class="modal-backdrop" id="upload-modal">
+    <div class="modal" style="max-width: 500px; background: var(--surface); border: 1px solid var(--border);">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border); display:flex; justify-content: space-between;">
+            <span style="font-family:'Press Start 2P'; font-size: 10px; color: var(--green)">NEW SKIN</span>
+            <button id="close-upload" style="background:none; border:none; color:var(--muted); font-size: 24px; cursor:pointer">&times;</button>
+        </div>
+        <div style="padding: 2rem">
+            <div class="drop-zone" id="drop-zone">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 40px; margin-bottom: 15px; color: var(--muted)"></i>
+                <p>Click to Upload PNG</p>
+                <input type="file" id="file-input" accept="image/png" style="display:none">
+            </div>
+            <div id="upload-fields" style="display:none; margin-top: 1.5rem;">
+                <input type="text" id="skin-name" class="field-input" placeholder="Skin Name">
+                <textarea id="skin-desc" class="field-input" placeholder="Description (Optional)" rows="3"></textarea>
+                <button class="btn-primary" style="width:100%; justify-content:center" id="save-skin-btn">SAVE TO DATABASE</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script src="script.js"></script>
+<div class="modal-backdrop" id="view-modal">
+    <div class="modal">
+        <div class="view-layout">
+            <div id="viewer-container">
+                <canvas id="skin-canvas"></canvas>
+                <div class="viewer-controls">
+                    <button class="vbtn" id="btn-walk">WALK</button>
+                    <button class="vbtn active" id="btn-spin">SPIN</button>
+                </div>
+                <button id="close-view" style="position:absolute; top:15px; left:15px; background:rgba(0,0,0,0.5); border:none; color:#fff; width:35px; height:35px; border-radius:50%; cursor:pointer; z-index:20;">&times;</button>
+            </div>
+            <div class="view-details">
+                <div>
+                    <span style="font-family:'Press Start 2P'; font-size: 9px; color:var(--green); letter-spacing: 1px; display:block; margin-bottom: 1rem;">SKIN DETAILS</span>
+                    <h2 id="v-name" style="font-size: 2.2rem; font-weight: 900; line-height: 1; margin-bottom: 0.5rem;"></h2>
+                    <p id="v-date" style="color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem;"></p>
+                    <p id="v-desc" style="color: #a1a1aa; line-height: 1.6; font-size: 1rem;"></p>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 3rem;">
+                    <a id="download-btn" class="btn-primary" style="justify-content:center; font-size: 7px; text-decoration: none;">DOWNLOAD</a>
+                    <button class="btn-outline danger" id="delete-btn">DELETE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import * as skinview3d from 'https://esm.sh/skinview3d@3.4.1';
+
+    let skins = JSON.parse(localStorage.getItem('skinVault_data')) || [];
+    let viewer = null;
+    let isWalking = false;
+    let isSpinning = true;
+    let pendingDataUrl = null;
+
+    // --- INITIALIZE VIEWER ---
+    function initViewer() {
+        if (viewer) return;
+        const container = document.getElementById("viewer-container");
+        const w = container.clientWidth || 500;
+        const h = container.clientHeight || 500;
+        viewer = new skinview3d.SkinViewer({
+            canvas: document.getElementById("skin-canvas"),
+            width: w,
+            height: h
+        });
+        // Spin on by default via autoRotate
+        viewer.autoRotate = true;
+        viewer.autoRotateSpeed = 1.5;
+
+        // Keep canvas matched to container on resize
+        const ro = new ResizeObserver(() => {
+            viewer.setSize(container.clientWidth, container.clientHeight);
+        });
+        ro.observe(container);
+    }
+
+    // --- UI LOGIC ---
+    function render() {
+        const grid = document.getElementById('skins-grid');
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const filtered = skins.filter(s => s.name.toLowerCase().includes(searchTerm));
+        
+        grid.innerHTML = filtered.map((skin, idx) => `
+            <div class="skin-card" onclick="openSkin(${idx})">
+                <div class="card-img">
+                    <img src="${skin.data}" alt="${skin.name}">
+                </div>
+                <div class="card-info">
+                    <div style="font-weight:700">${skin.name}</div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('stats').innerText = `${skins.length} Skins`;
+        localStorage.setItem('skinVault_data', JSON.stringify(skins));
+    }
+
+    window.openSkin = (index) => {
+        const skin = skins[index];
+        initViewer();
+        viewer.loadSkin(skin.data);
+        document.getElementById('v-name').innerText = skin.name;
+        document.getElementById('v-desc').innerText = skin.description || 'No description provided.';
+        document.getElementById('v-date').innerText = `Added on ${skin.date}`;
+        
+        const dlBtn = document.getElementById('download-btn');
+        dlBtn.href = skin.data;
+        dlBtn.download = `${skin.name}.png`;
+
+        document.getElementById('delete-btn').onclick = () => {
+            skins.splice(index, 1);
+            closeModal('view-modal');
+            render();
+        };
+
+        document.getElementById('view-modal').classList.add('open');
+    };
+
+    window.closeModal = (id) => {
+        document.getElementById(id).classList.remove('open');
+    };
+
+    // --- EVENT LISTENERS ---
+    document.getElementById('open-upload-btn').onclick = () => {
+        document.getElementById('upload-modal').classList.add('open');
+        document.getElementById('upload-fields').style.display = 'none';
+    };
+
+    document.getElementById('drop-zone').onclick = () => document.getElementById('file-input').click();
+
+    document.getElementById('file-input').onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                pendingDataUrl = event.target.result;
+                document.getElementById('upload-fields').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    document.getElementById('save-skin-btn').onclick = () => {
+        const name = document.getElementById('skin-name').value || "Unnamed Skin";
+        const desc = document.getElementById('skin-desc').value;
+        skins.push({
+            name,
+            description: desc,
+            data: pendingDataUrl,
+            date: new Date().toLocaleDateString()
+        });
+        render();
+        closeModal('upload-modal');
+        document.getElementById('skin-name').value = '';
+        document.getElementById('skin-desc').value = '';
+    };
+
+    document.getElementById('btn-walk').onclick = function() {
+        isWalking = !isWalking;
+        this.classList.toggle('active', isWalking);
+        // The correct API: viewer.animation (singular) = instance or null
+        viewer.animation = isWalking ? new skinview3d.WalkingAnimation() : null;
+    };
+
+    document.getElementById('btn-spin').onclick = function() {
+        isSpinning = !isSpinning;
+        this.classList.toggle('active', isSpinning);
+        // autoRotate is the correct property for spin in skinview3d v3
+        viewer.autoRotate = isSpinning;
+    };
+
+    document.getElementById('close-view').onclick = () => closeModal('view-modal');
+    document.getElementById('close-upload').onclick = () => closeModal('upload-modal');
+    document.getElementById('search-input').oninput = render;
+
+    // Initial Load
+    render();
+</script>
 
 </body>
 </html>

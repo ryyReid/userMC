@@ -1,55 +1,48 @@
-const express = require("express");
-const multer = require("multer");
-const fs = require("fs");
-
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
-app.use(express.static("."));
-app.use("/uploads", express.static("uploads"));
+// This allows the server to handle the large image strings (DataURLs)
+app.use(express.json({ limit: '50mb' })); 
+app.use(express.static('.')); 
 
-const storage = multer.diskStorage({
-  destination: "uploads/",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + ".png");
-  }
+const DB_PATH = path.join(__dirname, 'skins.json');
+
+// Helper to read the JSON file
+const getSkins = () => {
+    if (!fs.existsSync(DB_PATH)) return [];
+    const data = fs.readFileSync(DB_PATH, 'utf8');
+    return JSON.parse(data || '[]');
+};
+
+// 1. Get all skins from the database
+app.get('/api/skins', (req, res) => {
+    res.json(getSkins());
 });
 
-const upload = multer({ storage });
-
-app.post("/upload", upload.single("skin"), (req, res) => {
-
-  const newSkin = {
-    name: req.body.name,
-    description: req.body.description,
-    file: req.file.filename
-  };
-
-  let skins = [];
-
-  if (fs.existsSync("skins.json")) {
-    skins = JSON.parse(fs.readFileSync("skins.json"));
-  }
-
-  skins.push(newSkin);
-
-  fs.writeFileSync("skins.json", JSON.stringify(skins, null, 2));
-
-  res.json({ success: true });
+// 2. Add a new skin to the database
+app.post('/api/skins', (req, res) => {
+    const skins = getSkins();
+    const newSkin = { 
+        ...req.body, 
+        id: Date.now() // Give it a unique ID
+    };
+    skins.unshift(newSkin); // Add to the start of the list
+    fs.writeFileSync(DB_PATH, JSON.stringify(skins, null, 2));
+    res.status(201).json(newSkin);
 });
 
-app.get("/skins", (req, res) => {
-
-  if (!fs.existsSync("skins.json")) {
-    return res.json([]);
-  }
-
-  const skins = JSON.parse(fs.readFileSync("skins.json"));
-
-  res.json(skins);
+// 3. Delete a skin by ID
+app.delete('/api/skins/:id', (req, res) => {
+    let skins = getSkins();
+    const skinId = parseInt(req.params.id);
+    skins = skins.filter(s => s.id !== skinId);
+    fs.writeFileSync(DB_PATH, JSON.stringify(skins, null, 2));
+    res.status(204).send();
 });
 
-app.listen(PORT, () =>
-  console.log("Server running http://localhost:" + PORT)
-);
+app.listen(PORT, () => {
+    console.log(`🚀 Database server running at http://localhost:${PORT}`);
+});
