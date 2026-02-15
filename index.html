@@ -337,7 +337,7 @@
                     <button class="vbtn" id="btn-walk">WALK</button>
                     <button class="vbtn active" id="btn-spin">SPIN</button>
                 </div>
-                <button id="close-view" style="position:absolute; top:15px; left:15px; background:rgba(0,0,0,0.5); border:none; color:#fff; width:35px; height:35px; border-radius:50%; cursor:pointer; z-index:20;">&times;</button>
+                <button id="close-view" aria-label="Close" title="Close" style="position:absolute; top:15px; left:15px; background:rgba(0,0,0,0.6); border:none; color:#fff; width:44px; height:44px; font-size:22px; display:flex; align-items:center; justify-content:center; border-radius:50%; cursor:pointer; z-index:20;">&times;</button>
             </div>
             <div class="view-details">
                 <div>
@@ -347,7 +347,7 @@
                     <p id="v-desc" style="color: #a1a1aa; line-height: 1.6; font-size: 1rem;"></p>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 3rem;">
-                    <a id="download-btn" class="btn-primary" style="justify-content:center; font-size: 7px; text-decoration: none;">DOWNLOAD</a>
+                    <a id="download-btn" class="btn-primary" style="justify-content:center; font-size: 15px; text-decoration: none;">DOWNLOAD</a>
                     <button class="btn-outline danger" id="delete-btn">DELETE</button>
                 </div>
             </div>
@@ -395,13 +395,34 @@
         grid.innerHTML = filtered.map((skin, idx) => `
             <div class="skin-card" onclick="openSkin(${idx})">
                 <div class="card-img">
-                    <img src="${skin.data}" alt="${skin.name}">
-                </div>
+    <canvas class="skin-preview" data-skin="${skin.data}"></canvas>
+</div>
                 <div class="card-info">
                     <div style="font-weight:700">${skin.name}</div>
                 </div>
             </div>
         `).join('');
+        document.querySelectorAll(".skin-preview").forEach(canvas => {
+    const skinUrl = canvas.dataset.skin;
+
+    const preview = new skinview3d.SkinViewer({
+        canvas: canvas,
+        width: 200,
+        height: 200
+    });
+
+    preview.loadSkin(skinUrl);
+    preview.zoom = 1; 
+
+
+    // Keep preview still (no spinning)
+    preview.autoRotate = false;
+
+    // Slight angled pose so it looks nicer
+    preview.playerObject.rotation.y = Math.PI / 6;
+    preview.playerObject.rotation.x = 0.05;
+});
+
         
         document.getElementById('stats').innerText = `${skins.length} Skins`;
         localStorage.setItem('skinVault_data', JSON.stringify(skins));

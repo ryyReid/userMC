@@ -122,6 +122,10 @@ image-rendering: pixelated;
 background: #222;
 
 }
+.card-img canvas {
+    width: 100%;
+    height: 100%;
+}
 
 .card h3 {
 
